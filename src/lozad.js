@@ -5,6 +5,33 @@
  */
 const isIE = typeof document !== 'undefined' && document.documentMode
 
+// breakpoints for backgrounds
+let breakpoints = [
+  {
+    src: 'sm',
+    width: 576,
+  },
+  {
+    src: 'md',
+    width: 768,
+  },
+  {
+    src: 'lg',
+    width: 992,
+  },
+  {
+    src: 'xl',
+    width: 1200,
+  },
+  {
+    src: 'xx',
+    width: 1400,
+  },
+];
+
+// get screen size
+let screen = document.documentElement.clientWidth;
+
 const defaultConfig = {
   rootMargin: '0px',
   threshold: 0,
@@ -46,7 +73,28 @@ const defaultConfig = {
     }
 
     if (element.getAttribute('data-background-image')) {
-      element.style.backgroundImage = `url('${element.getAttribute('data-background-image')}')`
+      // return a breakpoint that qualifies
+      let breakpoint = breakpoints
+        .filter(function(breakpoint) {
+          // return if element is larger than screen width
+          // return if data-background-image for the breakpoint exists
+          if (screen >= breakpoint.width && element.getAttribute(`data-background-image-${breakpoint.src}`)) {
+            return (breakpoint.src);
+          }
+        })
+        // get the last element
+        .pop();
+
+      // default data-background-image
+      let attr = element.getAttribute('data-background-image');
+
+      // if a breakpoint qualified, then change the attr
+      if (breakpoint) {
+        attr = element.getAttribute(`data-background-image-${breakpoint.src}`);
+      }
+
+      // set the background-image css prop
+      element.style.backgroundImage = `url(${attr})`;
     }
 
     if (element.getAttribute('data-toggle-class')) {
